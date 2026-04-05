@@ -530,9 +530,9 @@ export default function MonTeaRecipePrototype() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 bg-black/25 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl rounded-3xl border border-[#d9e6d4] bg-[#fffdf7] p-5 md:p-6 shadow-2xl">
-              <div className="flex items-start justify-between gap-3 mb-5">
+          <div className="fixed inset-0 z-50 bg-black/25 flex items-start md:items-center justify-center p-0 md:p-4 overflow-y-auto">
+            <div className="w-full h-full md:h-auto md:max-w-2xl rounded-none md:rounded-3xl border-0 md:border border-[#d9e6d4] bg-[#fffdf7] p-4 md:p-6 shadow-2xl md:my-4 max-h-screen md:max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 z-10 bg-[#fffdf7] flex items-start justify-between gap-3 mb-5 pb-3 border-b border-[#edf2e7]">
                 <div>
                   <div className="text-sm uppercase tracking-wide text-[#7ea07b] mb-2">
                     {editingIndex !== null ? "Edit Recipe" : "Add Recipe Template"}
@@ -582,7 +582,7 @@ export default function MonTeaRecipePrototype() {
                   value={form.ingredientsText}
                   onChange={(e) => setForm({ ...form, ingredientsText: e.target.value })}
                   placeholder={"One ingredient per line\nBlack tea - 6 oz\nCreamer - 2 oz\nSimple syrup - 1 oz"}
-                  rows={6}
+                  rows={4}
                   className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
                 />
               </div>
@@ -593,7 +593,7 @@ export default function MonTeaRecipePrototype() {
                   value={form.stepsText}
                   onChange={(e) => setForm({ ...form, stepsText: e.target.value })}
                   placeholder={"One step per line\nAdd tea to shaker\nAdd milk and syrup\nShake with ice\nPour and serve"}
-                  rows={6}
+                  rows={4}
                   className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
                 />
               </div>
@@ -609,7 +609,7 @@ export default function MonTeaRecipePrototype() {
                 />
               </div>
 
-              <div className="mt-5 flex flex-wrap gap-3 justify-end">
+              <div className="sticky bottom-0 bg-[#fffdf7] mt-5 flex flex-wrap gap-3 justify-end pt-3 border-t border-[#edf2e7]">
                 <button
                   onClick={() => setShowForm(false)}
                   className="px-4 py-3 rounded-2xl text-sm border bg-[#faf8f1] border-[#edf2e7] hover:bg-[#f1f6ec] transition"
