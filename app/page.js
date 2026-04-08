@@ -1662,12 +1662,6 @@ export default function MonTeaRecipePrototype() {
                     </ol>
                   </section>
                 </div>
-
-                <section className="mt-5 rounded-3xl bg-[#f7fbf4] border border-[#e4ecde] p-5">
-                  <h3 className="text-lg font-semibold mb-2">Notes</h3>
-                  <div className="text-sm text-[#7ea07b] mb-2">Selected Sweetness: {sweetness}</div>
-                  <p className="text-[#5d6859]">{selected.notes}</p>
-                </section>
               </>
             ) : (
               <div className="text-[#7d8777]">Select a drink to view the recipe.</div>
