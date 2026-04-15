@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 
 // NOTE: Drinks that use the teaspresso machine have been reclassified into "Teaspresso"
 const initialDrinks = [
@@ -21,8 +22,7 @@ const initialDrinks = [
       "Mix blueberry with milk.",
       "Make matcha.",
       "Pour matcha in cup."
-    ],
-    notes: "75% and 100% add cane sugar with blueberry puree."
+    ]
   },
   {
     name: "Coconut Matcha",
@@ -40,8 +40,7 @@ const initialDrinks = [
       "Mix coconut with milk.",
       "Make matcha.",
       "Pour matcha in cup."
-    ],
-    notes: "Coconut pumps increase with sweetness level."
+    ]
   },
   {
     name: "Banana Cream Matcha",
@@ -65,8 +64,7 @@ const initialDrinks = [
       "Pour matcha in cup.",
       "Put 1 scoop of brulee on top.",
       "Cap with white cover."
-    ],
-    notes: "Banana cream matcha gets brulee topping and white cover."
+    ]
   },
   {
     name: "Caramel Brulee Matcha",
@@ -88,8 +86,7 @@ const initialDrinks = [
       "Pour matcha in cup.",
       "Put 1 scoop of brulee on top.",
       "Cap with white cover."
-    ],
-    notes: "This recipe only specifies 50% and 100% caramel amounts in the guide."
+    ]
   },
   {
     name: "Brown Sugar Matcha",
@@ -108,8 +105,7 @@ const initialDrinks = [
       "Add milk to line.",
       "Make matcha.",
       "Pour matcha in cup."
-    ],
-    notes: "Brown sugar amount changes with sweetness selection."
+    ]
   },
   {
     name: "Creamy Uji Matcha",
@@ -129,8 +125,7 @@ const initialDrinks = [
       "Make matcha.",
       "Pour matcha in cup.",
       "Add 1 scoop Cream Cloud."
-    ],
-    notes: "Creamy Uji Matcha gets cream cloud on top."
+    ]
   },
   {
     name: "Uji Matcha",
@@ -148,8 +143,7 @@ const initialDrinks = [
       "Mix vanilla with milk.",
       "Make matcha.",
       "Pour matcha in cup."
-    ],
-    notes: "Classic Uji Matcha with vanilla syrup."
+    ]
   },
   {
     name: "Mango Matcha",
@@ -167,8 +161,7 @@ const initialDrinks = [
       "Add milk to line.",
       "Make matcha.",
       "Pour matcha in cup."
-    ],
-    notes: "75% and 100% add cane sugar with mango jam."
+    ]
   },
   {
     name: "Strawberry Matcha",
@@ -186,8 +179,7 @@ const initialDrinks = [
       "Add milk to line.",
       "Make matcha.",
       "Pour matcha in cup."
-    ],
-    notes: "75% and 100% add cane sugar with strawberry jam."
+    ]
   },
   {
     name: "Rosy Matcha",
@@ -206,8 +198,7 @@ const initialDrinks = [
       "Mix rose with milk.",
       "Make matcha.",
       "Pour matcha in cup."
-    ],
-    notes: "75% and 100% add cane sugar with the rose syrup."
+    ]
   },
   {
     name: "House Special (Boba)",
@@ -229,8 +220,7 @@ const initialDrinks = [
       "Add tea to shaker.",
       "Shake on 'A'.",
       "Pour in cup."
-    ],
-    notes: "House Special (Boba) follows the standard teaspresso milk tea pattern."
+    ]
   },
   {
     name: "Phoenix Oolong",
@@ -250,8 +240,7 @@ const initialDrinks = [
       "Add tea to shaker.",
       "Shake on 'A'.",
       "Pour in cup."
-    ],
-    notes: "Standard teaspresso milk tea flow."
+    ]
   },
   {
     name: "Lychee Black",
@@ -271,8 +260,7 @@ const initialDrinks = [
       "Add tea to shaker.",
       "Shake on 'A'.",
       "Pour in cup."
-    ],
-    notes: "Fruit-forward teaspresso drink."
+    ]
   },
   {
     name: "White Grape Oolong",
@@ -290,8 +278,7 @@ const initialDrinks = [
       "Add tea to shaker.",
       "Shake on 'A'.",
       "Pour in cup."
-    ],
-    notes: "White Grape Oolong follows the teaspresso fruit tea style."
+    ]
   },
   {
     name: "Earl Grey Boba",
@@ -313,8 +300,7 @@ const initialDrinks = [
       "Add tea to shaker.",
       "Shake on 'A'.",
       "Pour in cup."
-    ],
-    notes: "Uses brown sugar instead of cane sugar."
+    ]
   },
   {
     name: "Premium Oolong",
@@ -334,8 +320,7 @@ const initialDrinks = [
       "Add tea to shaker.",
       "Shake on 'A'.",
       "Pour in cup."
-    ],
-    notes: "Standard premium oolong teaspresso recipe."
+    ]
   },
   {
     name: "Peach Mountain Green",
@@ -354,8 +339,7 @@ const initialDrinks = [
       "Fill to 500mL with green tea.",
       "Cover and shake well.",
       "Add to cup."
-    ],
-    notes: "Peach Mountain Green uses peach jam rather than syrup."
+    ]
   },
   {
     name: "Mango Passion Oolong",
@@ -376,8 +360,7 @@ const initialDrinks = [
       "Fill to 500mL with oolong tea.",
       "Cover and shake well.",
       "Add to cup."
-    ],
-    notes: "Uses oolong tea base with passionfruit jam and mango syrup."
+    ]
   },
   {
     name: "Mango Strawberry Oolong",
@@ -398,8 +381,7 @@ const initialDrinks = [
       "Fill to 500mL with oolong tea.",
       "Cover and shake well.",
       "Add to cup."
-    ],
-    notes: "Uses oolong tea base with mango jam and strawberry syrup."
+    ]
   },
   {
     name: "Pineapple Passion Fruit Green",
@@ -420,8 +402,7 @@ const initialDrinks = [
       "Fill to 500mL with green tea.",
       "Cover and shake well.",
       "Add to cup."
-    ],
-    notes: "Uses green tea base with passionfruit jam and pineapple syrup."
+    ]
   },
   {
     name: "Kumquat Lemon Oolong",
@@ -440,8 +421,7 @@ const initialDrinks = [
       "Fill to 500mL with green tea.",
       "Cover and shake well.",
       "Add to cup."
-    ],
-    notes: "The recipe guide lists green tea fill for this drink."
+    ]
   },
   {
     name: "Mango Lemon Green",
@@ -462,8 +442,7 @@ const initialDrinks = [
       "Fill to 500mL with green tea.",
       "Cover and shake well.",
       "Add to cup."
-    ],
-    notes: "Mango Lemon Green uses mango jam plus lemon syrup."
+    ]
   },
   {
     name: "Mango Jasmine Green",
@@ -482,8 +461,7 @@ const initialDrinks = [
       "Add mango: 25% = 1 scoop mango + 30g mango syrup, 50% = 1 scoop mango + 40g mango syrup, 75% = 1 scoop mango + 40g mango syrup + 0.1 cane sugar, 100% = 1 scoop mango + 40g mango syrup + 0.2 cane sugar.",
       "Pour tea in shaker.",
       "Shake on 'A'."
-    ],
-    notes: "Mango Jasmine Green uses teaspresso jasmine tea instead of a 500mL fill line."
+    ]
   },
   {
     name: "Strawberry Lemonade Oolong",
@@ -503,8 +481,7 @@ const initialDrinks = [
       "Fill to 500mL with oolong tea.",
       "Cover and shake well.",
       "Add to cup."
-    ],
-    notes: "Strawberry Lemonade Oolong combines strawberry syrup with lemon."
+    ]
   },
   {
     name: "Pineapple Coconut Green",
@@ -524,27 +501,25 @@ const initialDrinks = [
       "Fill to 500mL with oolong tea.",
       "Cover and shake well.",
       "Add to cup."
-    ],
-    notes: "The guide lists Oolong tea fill for Pineapple Coconut Green."
+    ]
   },
   {
     name: "Citrus Iced Tea",
     category: "Fruit Tea",
     ingredients: [
-      "Pu'Er tea - teaspresso base",
+      "Pu\'Er tea - teaspresso base",
       "Ice - full shaker",
       "Orange syrup - 30g / 40g depending on sweetness",
       "Cane sugar - 0 / 0 / 0.1 / 0.2 depending on sweetness"
     ],
     steps: [
-      "Put Pu'Er tea in teaspresso machine.",
+      "Put Pu\'Er tea in teaspresso machine.",
       "Press 'G'.",
       "Fill shaker with ice.",
       "Add orange syrup: 25% = 30g orange, 50% = 40g orange, 75% = 40g + 0.1 cane sugar, 100% = 40g + 0.2 cane sugar.",
       "Pour tea in shaker.",
       "Shake on 'A'."
-    ],
-    notes: "Listed in multiple tabs in the PDF; kept once here."
+    ]
   },
   {
     name: "Tiramisu Coffee",
@@ -568,8 +543,7 @@ const initialDrinks = [
       "Pour espresso shot on milk.",
       "Add 1 scoop Cream Cloud.",
       "Add dashes of cocoa powder on top."
-    ],
-    notes: "Coffee recipe from the Coffee section of the guide."
+    ]
   },
   {
     name: "Coconut Vanilla Coffee",
@@ -591,8 +565,7 @@ const initialDrinks = [
       "Stir with bar spoon.",
       "Make espresso shot.",
       "Pour espresso shot on milk."
-    ],
-    notes: "Coconut Vanilla Coffee uses coconut milk plus regular milk."
+    ]
   },
   {
     name: "Brown Sugar Coffee",
@@ -611,8 +584,7 @@ const initialDrinks = [
       "Add espresso shot to shaker.",
       "Shake and pour into cup.",
       "Top with milk."
-    ],
-    notes: "Brown Sugar Coffee uses espresso shaken with brown sugar."
+    ]
   },
   {
     name: "Ube Coffee",
@@ -630,8 +602,7 @@ const initialDrinks = [
       "Add milk.",
       "Stir syrup with bar spoon.",
       "Add espresso shot."
-    ],
-    notes: "75% and 100% add cane sugar with ube syrup."
+    ]
   },
   {
     name: "Honeydew Coffee",
@@ -649,8 +620,7 @@ const initialDrinks = [
       "Add milk.",
       "Stir syrup with bar spoon.",
       "Add espresso shot."
-    ],
-    notes: "75% and 100% add cane sugar with honeydew syrup."
+    ]
   },
   {
     name: "Caramel Brulee Coffee",
@@ -669,8 +639,7 @@ const initialDrinks = [
       "Stir syrup with bar spoon.",
       "Add espresso shot.",
       "Add 1 scoop Brulee Cream."
-    ],
-    notes: "Caramel Brulee Coffee only specifies 50% and 100% caramel amounts in the guide."
+    ]
   },
   {
     name: "Rosy Coffee",
@@ -688,8 +657,7 @@ const initialDrinks = [
       "Add milk.",
       "Stir syrup with bar spoon.",
       "Add espresso shot."
-    ],
-    notes: "Listed in both Coffee and Seasonal tabs; kept once here."
+    ]
   },
   {
     name: "Ube Boba",
@@ -707,8 +675,7 @@ const initialDrinks = [
       "Add 150mL hot water and mix.",
       "Pour into cup and mix with bar spoon.",
       "Top with milk."
-    ],
-    notes: "Powder-based milk tea."
+    ]
   },
   {
     name: "Honeydew",
@@ -726,8 +693,7 @@ const initialDrinks = [
       "Add 150mL hot water and mix.",
       "Pour into cup and mix with bar spoon.",
       "Top with milk."
-    ],
-    notes: "Powder-based honeydew milk tea."
+    ]
   },
   {
     name: "Mint Green",
@@ -747,8 +713,7 @@ const initialDrinks = [
       "Add jasmine tea to shaker.",
       "Shake on 'A'.",
       "Pour into cup and top with ice."
-    ],
-    notes: "Mint Green is a jasmine-based milk tea with creamer."
+    ]
   },
   {
     name: "Roasted Oolong Boba",
@@ -770,8 +735,7 @@ const initialDrinks = [
       "Add tea to shaker.",
       "Shake on 'A'.",
       "Pour in cup."
-    ],
-    notes: "Listed in both Teaspresso and Milk Tea tabs; kept once here."
+    ]
   },
   {
     name: "Jasmine Green",
@@ -788,8 +752,7 @@ const initialDrinks = [
       "Add cane sugar: 25% = 0.7, 50% = 1.4, 75% = 2.1, 100% = 2.9.",
       "Pour tea in shaker.",
       "Shake on 'A'."
-    ],
-    notes: "Simple jasmine milk tea base from the guide."
+    ]
   },
   {
     name: "Chai Tea Boba",
@@ -810,8 +773,7 @@ const initialDrinks = [
       "Add 150mL hot water and mix.",
       "Pour into cup and mix with bar spoon.",
       "Top with milk."
-    ],
-    notes: "Chai Tea Boba mixes with hot water before topping with milk."
+    ]
   },
   {
     name: "Thai Tea",
@@ -829,8 +791,7 @@ const initialDrinks = [
       "Add 150mL hot water and mix.",
       "Pour into cup and mix with bar spoon.",
       "Top with milk."
-    ],
-    notes: "Thai Tea is another powder-based milk tea."
+    ]
   },
   {
     name: "Caramel Apple Boba",
@@ -852,8 +813,7 @@ const initialDrinks = [
       "Add tea to shaker.",
       "Shake on 'A'.",
       "Pour in cup."
-    ],
-    notes: "Listed in Seasonal, Teaspresso, and Milk Tea; kept once here."
+    ]
   },
   {
     name: "Mango Coconut Milk Tea",
@@ -875,8 +835,7 @@ const initialDrinks = [
       "Fill 550mL green tea.",
       "Shake on 'A'.",
       "Pour into cup."
-    ],
-    notes: "Recipe text in the guide says Mango/Coconut with orange measurement wording."
+    ]
   },
   {
     name: "Orange Jasmine Milk Tea",
@@ -894,8 +853,7 @@ const initialDrinks = [
       "Add orange syrup: 25% = 30g orange, 50% = 40g orange, 75% = 40g + 0.1 cane sugar, 100% = 40g + 0.2 cane sugar.",
       "Pour tea in shaker.",
       "Shake on 'A'."
-    ],
-    notes: "Listed in Seasonal and Milk Tea; kept once here."
+    ]
   },
   {
     name: "House Special Boba Oats",
@@ -920,8 +878,7 @@ const initialDrinks = [
       "Shake it on 'A'.",
       "Add sugar around the cup: 25% = 10g brown sugar, 50% = 20g, 75% = 30g, 100% = 40g.",
       "Pour tea in cup."
-    ],
-    notes: "Same drink concept as your earlier House Special Boba & Oats naming."
+    ]
   },
   {
     name: "Brown Sugar Boba",
@@ -938,8 +895,7 @@ const initialDrinks = [
       "Coat walls in brown sugar.",
       "Add 75% ice.",
       "Fill with milk."
-    ],
-    notes: "Brown sugar amount changes with sweetness selection."
+    ]
   },
   {
     name: "Oreo Brulee Boba",
@@ -957,8 +913,7 @@ const initialDrinks = [
       "Add sugar: 25% = 10g brown sugar, 50% = 20g, 75% = 30g, 100% = 40g.",
       "Add 75% ice.",
       "Fill with milk."
-    ],
-    notes: "Brown sugar amount changes with sweetness selection."
+    ]
   },
   {
     name: "Strawberry Milk Cloud",
@@ -981,8 +936,7 @@ const initialDrinks = [
       "Pour in cup.",
       "Add Cream Cloud on top.",
       "Top with White Cap."
-    ],
-    notes: "Strawberry Milk Cloud uses the E shake setting."
+    ]
   },
   {
     name: "Strawberry Cheesecake",
@@ -1003,8 +957,7 @@ const initialDrinks = [
       "Add 1/2 scoop stabilizer.",
       "Blend until smooth (use Pulse at the end).",
       "Pour into cup and cap with white."
-    ],
-    notes: "Cheesecake frappe gets Cream Cloud in the cup first."
+    ]
   },
   {
     name: "Mint Chocolate",
@@ -1027,8 +980,7 @@ const initialDrinks = [
       "Add 1/2 scoop stabilizer.",
       "Blend until smooth (use Pulse at the end).",
       "Pour into cup and cap with white."
-    ],
-    notes: "Mint Chocolate frappe uses green tea plus chocolate chips."
+    ]
   },
   {
     name: "Ube Cloud",
@@ -1049,8 +1001,7 @@ const initialDrinks = [
       "Add 1/2 scoop stabilizer.",
       "Blend until smooth (use Pulse at the end).",
       "Pour into cup and cap with white."
-    ],
-    notes: "Ube Cloud gets Cream Cloud in the cup first."
+    ]
   },
   {
     name: "Pina Colada",
@@ -1075,8 +1026,7 @@ const initialDrinks = [
       "Add 1/2 scoop stabilizer.",
       "Blend until smooth (use Pulse at the end).",
       "Pour into cup and cap with white."
-    ],
-    notes: "The guide only lists 50%, 75%, and 100% sweetness amounts for Pina Colada."
+    ]
   },
   {
     name: "Honeydew Frappe",
@@ -1095,8 +1045,7 @@ const initialDrinks = [
       "Add 1/2 scoop stabilizer.",
       "Blend until smooth (use Pulse at the end).",
       "Pour into cup and cap with white."
-    ],
-    notes: "Powder-based frappe."
+    ]
   },
   {
     name: "Mango Pomelo",
@@ -1121,73 +1070,58 @@ const initialDrinks = [
       "Add 1/2 scoop stabilizer.",
       "Blend until smooth (use Pulse at the end).",
       "Pour into cup and cap with white."
-    ],
-    notes: "The guide only lists 50%, 75%, and 100% amounts for Mango Pomelo."
+    ]
   }
 ];
 
 const emptyForm = {
   name: "",
   category: "Milk Tea",
-  ingredientsText: "",
   stepsText: "",
-  notes: ""
+  sugar25: "",
+  sugar50: "",
+  sugar75: "",
+  sugar100: ""
 };
 
 const sweetnessLabels = ["25%", "50%", "75%", "100%"];
 
+const supabaseUrl = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_SUPABASE_URL || "" : "";
+const supabaseAnonKey = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "" : "";
+const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
+
+function toDbDrink(drink, index = 0) {
+  const sugar = drink.sugarLevels || deriveSugarLevels(drink);
+  return {
+    name: drink.name,
+    category: drink.category,
+    steps: drink.steps || [],
+    sugar_25: sugar["25%"] || "",
+    sugar_50: sugar["50%"] || "",
+    sugar_75: sugar["75%"] || "",
+    sugar_100: sugar["100%"] || "",
+    sort_order: index
+  };
+}
+
+function fromDbDrink(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    category: row.category,
+    ingredients: [],
+    steps: row.steps || [],
+    sugarLevels: {
+      "25%": row.sugar_25 || "",
+      "50%": row.sugar_50 || "",
+      "75%": row.sugar_75 || "",
+      "100%": row.sugar_100 || ""
+    }
+  };
+}
+
 function getSweetnessIndex(level) {
   return { "25%": 0, "50%": 1, "75%": 2, "100%": 3 }[level] ?? 3;
-}
-
-function getAvailableSweetnesses(drink) {
-  if (!drink) return sweetnessLabels;
-
-  const combined = [
-    ...(drink.ingredients || []),
-    ...(drink.steps || []),
-    drink.notes || ""
-  ].join(" ");
-
-  const found = sweetnessLabels.filter((level) => combined.includes(level));
-  return found.length > 0 ? found : sweetnessLabels;
-}
-
-function getSweetnessAdjustedStepText(step, sweetness) {
-  const levels = ["25%", "50%", "75%", "100%"];
-  const markerPositions = levels
-    .map((level) => ({ level, index: step.indexOf(level + " =") }))
-    .filter((item) => item.index >= 0);
-
-  if (markerPositions.length === 0) return step;
-
-  const prefix = step
-    .slice(0, markerPositions[0].index)
-    .trim()
-    .replace(/:$/, "")
-    .replace(/-$/, "")
-    .trim();
-
-  const valuesByLevel = {};
-
-  for (let i = 0; i < markerPositions.length; i++) {
-    const current = markerPositions[i];
-    const next = markerPositions[i + 1];
-    const valueStart = current.index + (current.level + " =").length;
-    const valueEnd = next ? next.index : step.length;
-    let value = step.slice(valueStart, valueEnd).trim();
-
-    while (value.startsWith(",") || value.startsWith(" ")) {
-      value = value.slice(1).trimStart();
-    }
-    while (value.endsWith(",") || value.endsWith(".") || value.endsWith(" ")) {
-      value = value.slice(0, -1).trimEnd();
-    }
-
-    valuesByLevel[current.level] = value;
-  }
-
-  return valuesByLevel[sweetness] ? prefix + ": " + valuesByLevel[sweetness] + "." : step;
 }
 
 function getSweetnessAdjustedIngredients(drink, sweetness) {
@@ -1213,218 +1147,131 @@ function getSweetnessAdjustedIngredients(drink, sweetness) {
   });
 }
 
-function getSweetnessAdjustedSteps(drink, sweetness) {
-  if (!drink) return [];
+function getSweetnessAdjustedStepText(step, sweetness) {
+  const levels = ["25%", "50%", "75%", "100%"];
+  const hasSweetnessMarkers = levels.some((level) => step.includes(level + " ="));
 
-  const sweetnessMap = {
-    "25%": {
-      brownSugar: "10g brown sugar",
-      fruitSyrup: "30g syrup",
-      fruitSyrupWithSugar: "30g syrup",
-      mangoJam: "1 scoop mango jam",
-      caneSugar: "no cane sugar"
-    },
-    "50%": {
-      brownSugar: "20g brown sugar",
-      fruitSyrup: "40g syrup",
-      fruitSyrupWithSugar: "40g syrup",
-      mangoJam: "2 scoops mango jam",
-      caneSugar: "no cane sugar"
-    },
-    "75%": {
-      brownSugar: "30g brown sugar",
-      fruitSyrup: "40g syrup",
-      fruitSyrupWithSugar: "40g syrup + 0.1 cane sugar",
-      mangoJam: "2 scoops mango jam + 0.1 cane sugar",
-      caneSugar: "0.1 cane sugar"
-    },
-    "100%": {
-      brownSugar: "40g brown sugar",
-      fruitSyrup: "40g syrup",
-      fruitSyrupWithSugar: "40g syrup + 0.2 cane sugar",
-      mangoJam: "2 scoops mango jam + 0.2 cane sugar",
-      caneSugar: "0.2 cane sugar"
-    }
-  };
+  if (!hasSweetnessMarkers) return step;
 
-  const config = sweetnessMap[sweetness] || sweetnessMap["100%"];
+  let prefix = step.split(":")[0].trim();
 
-  switch (drink.name) {
-    case "Brown Sugar Boba":
-      return [
-        "Add 1 scoop boba into cup.",
-        `Add ${config.brownSugar}.`,
-        "Coat walls in brown sugar.",
-        "Add 75% ice.",
-        "Fill with milk."
-      ];
+  if (!prefix) {
+    const markerPositions = levels
+      .map((level) => ({ level, index: step.indexOf(level + " =") }))
+      .filter((item) => item.index >= 0);
 
-    case "Oreo Brûlée Boba":
-      return [
-        "Add 1 scoop Oreo into cup.",
-        "Add 1 scoop boba.",
-        `Add ${config.brownSugar}.`,
-        "Add 75% ice.",
-        "Fill with milk."
-      ];
+    if (markerPositions.length === 0) return step;
 
-    case "Mango Strawberry Oolong":
-      return [
-        "Add toppings to cup.",
-        "Add 75% ice to shaker.",
-        "Add 1 scoop mango jam.",
-        `Add strawberry syrup: ${config.fruitSyrupWithSugar}.`,
-        "Fill to 500mL with green tea.",
-        "Cover and shake well.",
-        "Add to cup."
-      ];
-
-    case "Mango Passionfruit Oolong":
-      return [
-        "Add toppings to cup.",
-        "Add 75% ice to shaker.",
-        "Add 1 scoop passionfruit jam.",
-        `Add mango syrup: ${config.fruitSyrupWithSugar}.`,
-        "Fill to 500mL with green tea.",
-        "Cover and shake well.",
-        "Add to cup."
-      ];
-
-    case "Pineapple Passionfruit Green":
-      return [
-        "Add toppings to cup.",
-        "Add 75% ice to shaker.",
-        "Add 1 scoop passionfruit jam.",
-        `Add pineapple syrup: ${config.fruitSyrupWithSugar}.`,
-        "Fill to 500mL with green tea.",
-        "Cover and shake well.",
-        "Add to cup."
-      ];
-
-    case "Mango Pomelo Frappe":
-      return [
-        "Add 1 scoop crystal boba to cup.",
-        "Add 40mL coconut milk.",
-        "Add 1 scoop pomelo.",
-        "Get blender and add 1 scoop ice.",
-        "Add 250mL water.",
-        `Add ${config.mangoJam}.`,
-        "Cover blender.",
-        "Blend until smooth. Use pulse for any ice chunks.",
-        "Pour in cup.",
-        "Cap with white lid."
-      ];
-
-    case "House Special Boba & Oats":
-      return [
-        "Get a cup.",
-        "Add 1 scoop oats.",
-        "Add 1 scoop boba.",
-        "Grab a shaker and fill 75% with ice.",
-        "Add 1 scoop creamer.",
-        "Fill to 450mL with oolong tea.",
-        "Cover it.",
-        "Shake it on 'A'.",
-        `Add ${config.brownSugar} around the cup.`,
-        "Pour tea in cup."
-      ];
-
-    case "Caramel Brulee Matcha":
-      return [
-        `Add ${sweetness === "100%" ? "2 pumps caramel puree" : "1 pump caramel puree"} in cup.`,
-        "Add 75% ice.",
-        "Add milk to smaller line.",
-        "Mix caramel with milk.",
-        "Make matcha.",
-        "Pour matcha in cup.",
-        "Put 1 scoop of brulee on top.",
-        "Cap with white cover."
-      ];
-
-    case "Caramel Apple Boba":
-      return [
-        "1 scoop boba in cup.",
-        "Put roasted oolong in teaspresso.",
-        "Press 'M'.",
-        "Fill large shaker with full ice.",
-        "Add 1 full scoop creamer.",
-        `Add ${sweetness === "25%" ? "1 pump caramel apple" : sweetness === "50%" ? "2 pumps caramel apple" : sweetness === "75%" ? "3 pumps caramel apple" : "4 pumps caramel apple"}.`,
-        "Add tea to shaker.",
-        "Shake on 'A'.",
-        "Pour in cup."
-      ];
-
-    case "Brown Sugar Matcha":
-      return [
-        "Add 1 scoop brown sugar boba.",
-        `Add ${config.brownSugar} around cup.`,
-        "Add 75% ice.",
-        "Add milk to line.",
-        "Make matcha.",
-        "Pour matcha in cup."
-      ];
-
-    case "Salted Caramel Boba":
-      return [
-        "1 scoop boba in cup.",
-        "Put roasted oolong in teaspresso.",
-        "Press 'M'.",
-        "Fill large shaker with full ice.",
-        "Add 1 full scoop creamer.",
-        `Add ${sweetness === "25%" ? "1 pump salted caramel" : sweetness === "50%" ? "2 pumps salted caramel" : sweetness === "75%" ? "3 pumps salted caramel" : "4 pumps salted caramel"}.`,
-        "Add tea to shaker.",
-        "Shake on 'A'.",
-        "Pour in cup."
-      ];
-
-    case "Rosy Matcha":
-      return [
-        `Add rose syrup: ${config.fruitSyrupWithSugar}.`,
-        "Add 75% ice.",
-        "Add milk to small line.",
-        "Mix rose with milk.",
-        "Make matcha.",
-        "Pour matcha in cup."
-      ];
-
-    case "Citrus Iced Tea":
-      return [
-        "Put Pu'Er tea in teaspresso machine.",
-        "Press 'G'.",
-        "Fill shaker with ice.",
-        `Add orange syrup: ${config.fruitSyrupWithSugar}.`,
-        "Pour tea in shaker.",
-        "Shake on 'A'."
-      ];
-
-    case "Orange Jasmine Milk Tea":
-      return [
-        "Put jasmine tea in teaspresso.",
-        "Press 'G'.",
-        "Fill shaker with ice.",
-        `Add orange syrup: ${config.fruitSyrupWithSugar}.`,
-        "Pour tea in shaker.",
-        "Shake on 'A'."
-      ];
-
-    case "Rosy Coffee":
-      return [
-        `Add rose syrup: ${config.fruitSyrupWithSugar}.`,
-        "Add 60% ice.",
-        "Fill milk to line near top.",
-        "Add one shot espresso."
-      ];
-
-    default:
-      return drink.steps;
+    prefix = step.slice(0, markerPositions[0].index).trim();
   }
+
+  prefix = prefix.replace(/:$/, "").replace(/-$/, "").trim();
+
+  return prefix ? `${prefix}.` : step;
+}
+
+function deriveSugarLevels(drink) {
+  if (drink?.sugarLevels) return drink.sugarLevels;
+
+  const levels = { "25%": "", "50%": "", "75%": "", "100%": "" };
+  const combined = [...(drink.ingredients || []), ...(drink.steps || [])];
+
+  const descriptorLine =
+    (drink.ingredients || []).find((line) => line.includes("depending on sweetness")) || "";
+
+  const descriptor = descriptorLine.includes(" - ")
+    ? descriptorLine.split(" - ")[0].trim().toLowerCase()
+    : "";
+
+  const firstWord = descriptor ? descriptor.split("\n")[0] : "";
+
+  const fixedJamAddIn =
+    (drink.ingredients || [])
+      .find((line) => line.toLowerCase().includes("jam - 1 scoop"))
+      ?.split(" - ")[0]
+      ?.trim()
+      ?.toLowerCase() || "";
+
+  combined.forEach((line) => {
+    ["25%", "50%", "75%", "100%"].forEach((level) => {
+      const marker = level + " =";
+      const start = line.indexOf(marker);
+
+      if (start === -1 || levels[level]) return;
+
+      const afterStart = start + marker.length;
+      const nextMarkers = ["25% =", "50% =", "75% =", "100% ="]
+        .map((m) => line.indexOf(m, afterStart))
+        .filter((i) => i !== -1);
+
+      const end = nextMarkers.length ? Math.min(...nextMarkers) : line.length;
+      let cleaned = line.slice(afterStart, end).trim();
+
+      while (cleaned.startsWith(",")) cleaned = cleaned.slice(1).trim();
+      while (cleaned.endsWith(",")) cleaned = cleaned.slice(0, -1).trim();
+      while (cleaned.endsWith(".")) cleaned = cleaned.slice(0, -1).trim();
+
+      if (descriptor) {
+        if (cleaned === "0") {
+          cleaned = "no " + descriptor;
+        } else if (!cleaned.toLowerCase().includes(firstWord)) {
+          if (cleaned.includes(" + ")) {
+            const parts = cleaned.split(" + ").map((part) => part.trim());
+            if (parts.length === 2) {
+              cleaned = parts[0] + " " + descriptor + " + " + parts[1] + " cane sugar";
+            }
+          } else {
+            cleaned = cleaned + " " + descriptor;
+          }
+        }
+      }
+
+      cleaned = cleaned.replaceAll("0.1 cane", "0.1 cane sugar");
+      cleaned = cleaned.replaceAll("0.2 cane", "0.2 cane sugar");
+      cleaned = cleaned.replaceAll("0.3 cane", "0.3 cane sugar");
+      cleaned = cleaned.replaceAll("0.4 cane", "0.4 cane sugar");
+      cleaned = cleaned.replaceAll("cane sugar sugar cane sugar", "cane sugar");
+      cleaned = cleaned.replaceAll("cane sugar cane sugar", "cane sugar");
+      cleaned = cleaned.replaceAll("sugar cane sugar", "cane sugar");
+      if (fixedJamAddIn && !cleaned.toLowerCase().includes(fixedJamAddIn)) {
+        cleaned = "1 Scoop " + fixedJamAddIn + " + " + cleaned;
+      }
+
+      cleaned = cleaned.replaceAll("  ", " ").trim();
+
+      // Capitalize nicely (Title Case for readability)
+      cleaned = cleaned
+        .split("\n")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+      levels[level] = cleaned;
+    });
+  });
+
+  return levels;
+}
+
+function getAvailableSweetnesses(drink) {
+  if (!drink) return sweetnessLabels;
+
+  const sugarLevels = deriveSugarLevels(drink);
+  const found = sweetnessLabels.filter((level) => sugarLevels[level]);
+  return found.length > 0 ? found : sweetnessLabels;
 }
 
 export default function MonTeaRecipePrototype() {
-  const [drinks, setDrinks] = useState(initialDrinks);
+  const PASSWORD = "leo123";
+  const [isAuthed, setIsAuthed] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [pendingAction, setPendingAction] = useState(null);
+  const [passwordError, setPasswordError] = useState("");
+  const [drinks, setDrinks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const [selected, setSelected] = useState(initialDrinks[0]);
+  const [selected, setSelected] = useState(null);
   const [sweetness, setSweetness] = useState("100%");
   const [showForm, setShowForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -1433,6 +1280,7 @@ export default function MonTeaRecipePrototype() {
   const availableSweetnesses = selected ? getAvailableSweetnesses(selected) : sweetnessLabels;
   const displayedSteps = selected ? (selected.steps || []).map((step) => getSweetnessAdjustedStepText(step, sweetness)) : [];
   const displayedIngredients = selected ? getSweetnessAdjustedIngredients(selected, sweetness) : [];
+  const currentSugarLevels = selected ? deriveSugarLevels(selected) : { "25%": "", "50%": "", "75%": "", "100%": "" };
 
   const categories = ["All", "Matcha", "Teaspresso", "Fruit Tea", "Coffee", "Milk Tea", "Frappe"];
 
@@ -1443,13 +1291,67 @@ export default function MonTeaRecipePrototype() {
         !q ||
         drink.name.toLowerCase().includes(q) ||
         drink.category.toLowerCase().includes(q) ||
-        drink.ingredients.some((item) => item.toLowerCase().includes(q));
+        drink.steps.some((item) => item.toLowerCase().includes(q));
 
       const matchesCategory = category === "All" || drink.category === category;
 
       return matchesSearch && matchesCategory;
     });
   }, [drinks, search, category]);
+
+  useEffect(() => {
+    async function loadRecipes() {
+      if (!supabase) {
+        setDrinks(initialDrinks);
+        setSelected(initialDrinks[0] || null);
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("recipes")
+        .select("*")
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true });
+
+      if (error) {
+        console.error("Failed to load recipes", error);
+        setDrinks(initialDrinks);
+        setSelected(initialDrinks[0] || null);
+        setLoading(false);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        const seedRows = initialDrinks.map((drink, index) => toDbDrink(drink, index));
+        const { data: seeded, error: seedError } = await supabase
+          .from("recipes")
+          .insert(seedRows)
+          .select("*");
+
+        if (seedError) {
+          console.error("Failed to seed recipes", seedError);
+          setDrinks(initialDrinks);
+          setSelected(initialDrinks[0] || null);
+          setLoading(false);
+          return;
+        }
+
+        const seededDrinks = (seeded || []).map(fromDbDrink);
+        setDrinks(seededDrinks);
+        setSelected(seededDrinks[0] || null);
+        setLoading(false);
+        return;
+      }
+
+      const mapped = data.map(fromDbDrink);
+      setDrinks(mapped);
+      setSelected(mapped[0] || null);
+      setLoading(false);
+    }
+
+    loadRecipes();
+  }, []);
 
   useEffect(() => {
     if (!selected && filteredDrinks.length > 0) {
@@ -1471,52 +1373,155 @@ export default function MonTeaRecipePrototype() {
   }, [selected, sweetness]);
 
   function openAddForm() {
+    if (!isAuthed) {
+      setPendingAction({ type: "add" });
+      setPasswordInput("");
+      setPasswordError("");
+      setShowPasswordModal(true);
+      return;
+    }
     setEditingIndex(null);
     setForm(emptyForm);
     setShowForm(true);
   }
 
   function openEditForm(drink) {
+    if (!isAuthed) {
+      setPendingAction({ type: "edit", drink });
+      setPasswordInput("");
+      setPasswordError("");
+      setShowPasswordModal(true);
+      return;
+    }
     const index = drinks.findIndex((d) => d.name === drink.name && d.category === drink.category);
+    const sugarLevels = deriveSugarLevels(drink);
     setEditingIndex(index);
     setForm({
       name: drink.name,
       category: drink.category,
-      ingredientsText: drink.ingredients.join("\n"),
-      stepsText: drink.steps.join("\n"),
-      notes: drink.notes
+      stepsText: drink.steps
+        .map((step) => getSweetnessAdjustedStepText(step, "100%"))
+        .join("\n"),
+      sugar25: sugarLevels["25%"] || "",
+      sugar50: sugarLevels["50%"] || "",
+      sugar75: sugarLevels["75%"] || "",
+      sugar100: sugarLevels["100%"] || ""
     });
     setShowForm(true);
   }
 
-  function handleSaveRecipe() {
+  function handlePasswordSubmit() {
+    if (passwordInput !== PASSWORD) {
+      setPasswordError("Wrong password");
+      return;
+    }
+
+    setIsAuthed(true);
+    setShowPasswordModal(false);
+    setPasswordError("");
+
+    if (pendingAction?.type === "add") {
+      setEditingIndex(null);
+      setForm(emptyForm);
+      setShowForm(true);
+    }
+
+    if (pendingAction?.type === "edit" && pendingAction.drink) {
+      const drink = pendingAction.drink;
+      const index = drinks.findIndex((d) => d.name === drink.name && d.category === drink.category);
+      const sugarLevels = deriveSugarLevels(drink);
+      setEditingIndex(index);
+      setForm({
+        name: drink.name,
+        category: drink.category,
+        stepsText: drink.steps
+          .map((step) => getSweetnessAdjustedStepText(step, "100%"))
+          .join("\n"),
+        sugar25: sugarLevels["25%"] || "",
+        sugar50: sugarLevels["50%"] || "",
+        sugar75: sugarLevels["75%"] || "",
+        sugar100: sugarLevels["100%"] || ""
+      });
+      setShowForm(true);
+    }
+
+    setPendingAction(null);
+    setPasswordInput("");
+  }
+
+  async function handleSaveRecipe() {
     const newDrink = {
       name: form.name.trim(),
       category: form.category,
-      ingredients: form.ingredientsText
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean),
       steps: form.stepsText
         .split("\n")
         .map((line) => line.trim())
         .filter(Boolean),
-      notes: form.notes.trim() || "No additional notes."
+      sugarLevels: {
+        "25%": form.sugar25.trim(),
+        "50%": form.sugar50.trim(),
+        "75%": form.sugar75.trim(),
+        "100%": form.sugar100.trim()
+      }
     };
 
-    if (!newDrink.name || newDrink.ingredients.length === 0 || newDrink.steps.length === 0) {
+    if (!newDrink.name || newDrink.steps.length === 0) {
       return;
     }
 
     if (editingIndex !== null) {
-      const updated = [...drinks];
-      updated[editingIndex] = newDrink;
-      setDrinks(updated);
-      setSelected(newDrink);
+      const current = drinks[editingIndex];
+      const payload = toDbDrink(newDrink, editingIndex);
+
+      if (current?.id && supabase) {
+        const { data, error } = await supabase
+          .from("recipes")
+          .update(payload)
+          .eq("id", current.id)
+          .select("*")
+          .single();
+
+        if (error) {
+          console.error("Failed to update recipe", error);
+          return;
+        }
+
+        const updatedDrink = fromDbDrink(data);
+        const updated = [...drinks];
+        updated[editingIndex] = updatedDrink;
+        setDrinks(updated);
+        setSelected(updatedDrink);
+      }
     } else {
-      const updated = [newDrink, ...drinks];
+      const payload = toDbDrink(newDrink, drinks.length);
+      if (!supabase) {
+        const createdDrink = { ...newDrink, id: String(Date.now()) };
+        const updated = [createdDrink, ...drinks];
+        setDrinks(updated);
+        setSelected(createdDrink);
+        setCategory("All");
+        setSearch("");
+        setShowForm(false);
+        setEditingIndex(null);
+        setForm(emptyForm);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("recipes")
+        .insert(payload)
+        .select("*")
+        .single();
+
+      if (error) {
+        console.error("Failed to add recipe", error);
+        return;
+      }
+
+      const createdDrink = fromDbDrink(data);
+      const updated = [createdDrink, ...drinks];
       setDrinks(updated);
-      setSelected(newDrink);
+      setSelected(createdDrink);
       setCategory("All");
       setSearch("");
     }
@@ -1636,18 +1641,19 @@ export default function MonTeaRecipePrototype() {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-5">
-                  <section className="rounded-3xl bg-[#f7fbf4] border border-[#e4ecde] p-5">
-                    <h3 className="text-lg font-semibold mb-4">Ingredients & Measurements</h3>
-                    <ul className="space-y-3 text-[#4c5948]">
-                      {displayedIngredients.map((ingredient, index) => (
-                        <li key={index} className="rounded-2xl bg-[#fffdf7] border border-[#edf2e7] px-4 py-3">
-                          {ingredient}
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
+                <section className="mb-5 rounded-3xl bg-[#f7fbf4] border border-[#e4ecde] p-5">
+                  <h3 className="text-lg font-semibold mb-4">Sweetness</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {sweetnessLabels.map((level) => (
+                      <div key={level} className={`rounded-2xl border px-4 py-3 ${sweetness === level ? "bg-[#e8f2e3] border-[#9fc29a]" : "bg-[#fffdf7] border-[#edf2e7]"}`}>
+                        <div className="text-xs uppercase tracking-wide text-[#7ea07b] mb-1">{level}</div>
+                        <div className="text-sm font-semibold text-[#3f4a3c]">{currentSugarLevels[level] || "—"}</div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
 
+                <div className="grid grid-cols-1 gap-5">
                   <section className="rounded-3xl bg-[#f7fbf4] border border-[#e4ecde] p-5">
                     <h3 className="text-lg font-semibold mb-4">Steps & Instructions</h3>
                     <ol className="space-y-3 text-[#4c5948]">
@@ -1664,32 +1670,77 @@ export default function MonTeaRecipePrototype() {
                 </div>
               </>
             ) : (
-              <div className="text-[#7d8777]">Select a drink to view the recipe.</div>
+              <div className="rounded-2xl border border-dashed border-[#d9e6d4] p-10 text-center text-[#7d8777]">
+                Select a drink to view recipe details.
+              </div>
             )}
           </div>
         </div>
 
+        {showPasswordModal && (
+          <div className="fixed inset-0 z-[60] bg-black/30 p-4 flex items-center justify-center">
+            <div className="w-full max-w-md rounded-[2rem] border border-[#d9e6d4] bg-[#fffdf7] p-6 shadow-2xl">
+              <h3 className="text-2xl font-bold tracking-tight mb-2">Enter password</h3>
+              <p className="text-sm text-[#7d8777] mb-4">Password required to add or edit recipes.</p>
+              <input
+                type="password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handlePasswordSubmit();
+                }}
+                placeholder="Enter password"
+                className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
+              />
+              {passwordError ? <div className="mt-3 text-sm text-red-600">{passwordError}</div> : null}
+              <div className="flex justify-end gap-3 mt-5">
+                <button
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    setPasswordInput("");
+                    setPasswordError("");
+                    setPendingAction(null);
+                  }}
+                  className="rounded-2xl border border-[#d9e6d4] px-5 py-3 text-lg hover:bg-[#f7f5ed]"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handlePasswordSubmit}
+                  className="rounded-2xl bg-[#dfeeda] border border-[#b9d3b3] px-6 py-3 text-lg font-semibold text-[#587054] hover:bg-[#d5e9cf]"
+                >
+                  Unlock
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {showForm && (
-          <div className="fixed inset-0 z-50 bg-black/25 flex items-start md:items-center justify-center p-0 md:p-4 overflow-y-auto">
-            <div className="w-full h-full md:h-auto md:max-w-2xl rounded-none md:rounded-3xl border-0 md:border border-[#d9e6d4] bg-[#fffdf7] p-4 md:p-6 shadow-2xl md:my-4 max-h-screen md:max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 z-10 bg-[#fffdf7] flex items-start justify-between gap-3 mb-5 pb-3 border-b border-[#edf2e7]">
+          <div className="fixed inset-0 z-50 bg-black/30 p-4 flex items-center justify-center">
+            <div className="w-full max-w-4xl rounded-[2rem] border border-[#d9e6d4] bg-[#fffdf7] p-6 md:p-8 max-h-[90vh] overflow-y-auto shadow-2xl">
+              <div className="flex items-start justify-between gap-4 mb-6">
                 <div>
-                  <div className="text-sm uppercase tracking-wide text-[#7ea07b] mb-2">
-                    {editingIndex !== null ? "Edit Recipe" : "Add Recipe Template"}
+                  <div className="text-xs uppercase tracking-wide text-[#7ea07b] mb-2">
+                    {editingIndex !== null ? "Edit Recipe Template" : "Add Recipe Template"}
                   </div>
-                  <h3 className="text-2xl font-bold tracking-tight text-[#3f4a3c]">
-                    {editingIndex !== null ? "Update drink recipe" : "Create a new drink recipe"}
-                  </h3>
+                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+                    {editingIndex !== null ? "Edit recipe" : "Create a new drink recipe"}
+                  </h2>
                 </div>
                 <button
-                  onClick={() => setShowForm(false)}
-                  className="px-3 py-2 rounded-xl text-sm border bg-[#faf8f1] border-[#edf2e7] hover:bg-[#f1f6ec]"
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingIndex(null);
+                    setForm(emptyForm);
+                  }}
+                  className="rounded-2xl border border-[#d9e6d4] px-5 py-3 text-lg hover:bg-[#f7f5ed]"
                 >
                   Close
                 </button>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 border-t border-[#edf2e7] pt-4">
                 <div>
                   <label className="block text-sm text-[#6f7d69] mb-2">Drink Name</label>
                   <input
@@ -1707,7 +1758,7 @@ export default function MonTeaRecipePrototype() {
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
                     className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
                   >
-                    {["Matcha", "Teaspresso", "Fruit Tea", "Coffee", "Milk Tea", "Frappe"].map((cat) => (
+                    {categories.filter((cat) => cat !== "All").map((cat) => (
                       <option key={cat} value={cat}>
                         {cat}
                       </option>
@@ -1716,49 +1767,75 @@ export default function MonTeaRecipePrototype() {
                 </div>
               </div>
 
-              <div className="mt-4">
-                <label className="block text-sm text-[#6f7d69] mb-2">Ingredients & Measurements</label>
-                <textarea
-                  value={form.ingredientsText}
-                  onChange={(e) => setForm({ ...form, ingredientsText: e.target.value })}
-                  placeholder={"One ingredient per line\nBlack tea - 6 oz\nCreamer - 2 oz\nSimple syrup - 1 oz"}
-                  rows={4}
-                  className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
-                />
-              </div>
+              
 
-              <div className="mt-4">
+              <div className="mb-6">
                 <label className="block text-sm text-[#6f7d69] mb-2">Steps & Instructions</label>
                 <textarea
                   value={form.stepsText}
                   onChange={(e) => setForm({ ...form, stepsText: e.target.value })}
-                  placeholder={"One step per line\nAdd tea to shaker\nAdd milk and syrup\nShake with ice\nPour and serve"}
-                  rows={4}
+                  placeholder={`One step per line\nAdd tea to shaker\nAdd milk and syrup\nShake with ice\nPour and serve`}
+                  rows={6}
                   className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
                 />
               </div>
 
-              <div className="mt-4">
-                <label className="block text-sm text-[#6f7d69] mb-2">Notes</label>
-                <textarea
-                  value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  placeholder="Optional notes for sweetness, toppings, cup size, or reminders"
-                  rows={3}
-                  className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
-                />
+              <div className="mb-6">
+                <label className="block text-sm text-[#6f7d69] mb-3">Sweetness</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-[#6f7d69] mb-2">25%</label>
+                    <input
+                      value={form.sugar25}
+                      onChange={(e) => setForm({ ...form, sugar25: e.target.value })}
+                      placeholder="Example: 10g brown sugar"
+                      className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#6f7d69] mb-2">50%</label>
+                    <input
+                      value={form.sugar50}
+                      onChange={(e) => setForm({ ...form, sugar50: e.target.value })}
+                      placeholder="Example: 20g brown sugar"
+                      className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#6f7d69] mb-2">75%</label>
+                    <input
+                      value={form.sugar75}
+                      onChange={(e) => setForm({ ...form, sugar75: e.target.value })}
+                      placeholder="Example: 30g brown sugar"
+                      className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#6f7d69] mb-2">100%</label>
+                    <input
+                      value={form.sugar100}
+                      onChange={(e) => setForm({ ...form, sugar100: e.target.value })}
+                      placeholder="Example: 40g brown sugar"
+                      className="w-full rounded-2xl bg-[#f7f5ed] border border-[#d9e6d4] px-4 py-3 outline-none focus:border-[#9fc29a]"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="sticky bottom-0 bg-[#fffdf7] mt-5 flex flex-wrap gap-3 justify-end pt-3 border-t border-[#edf2e7]">
+              <div className="flex justify-end gap-3 border-t border-[#edf2e7] pt-4">
                 <button
-                  onClick={() => setShowForm(false)}
-                  className="px-4 py-3 rounded-2xl text-sm border bg-[#faf8f1] border-[#edf2e7] hover:bg-[#f1f6ec] transition"
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingIndex(null);
+                    setForm(emptyForm);
+                  }}
+                  className="rounded-2xl border border-[#d9e6d4] px-5 py-3 text-lg hover:bg-[#f7f5ed]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveRecipe}
-                  className="px-4 py-3 rounded-2xl text-sm font-semibold bg-[#dfeeda] border border-[#b9d3b3] text-[#587054] hover:bg-[#d5e9cf] transition"
+                  className="rounded-2xl bg-[#dfeeda] border border-[#b9d3b3] px-6 py-3 text-lg font-semibold text-[#587054] hover:bg-[#d5e9cf]"
                 >
                   {editingIndex !== null ? "Save Changes" : "Add Recipe"}
                 </button>
